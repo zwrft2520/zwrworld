@@ -109,10 +109,17 @@ CompletableFuture.supplyAsync(() -> "Hello")
 常用方法
 
 方法	说明
-thenApply()	转换结果（返回新值）
+
+henApply()	转换结果（返回新值）
+
 thenAccept()	消费结果（无返回值）
+
 thenRun()	执行操作（忽略结果）
+
 thenCompose()	组合多个 CompletableFuture
+
 thenCombine()	合并两个 Future 的结果
-exceptionally()	异常处理
+
+exceptionally() 	异常处理
+
 handle()	处理结果或异常
