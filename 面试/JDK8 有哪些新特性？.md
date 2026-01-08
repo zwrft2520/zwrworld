@@ -106,20 +106,232 @@ CompletableFuture.supplyAsync(() -> "Hello")
                  .thenAccept(System.out::println);
 ```
 
-常用方法
 
-方法	说明
+User: CompletableFuture 你能解释下如何使用吗？
 
-henApply()	转换结果（返回新值）
+GitHub Copilot: # CompletableFuture 使用指南
 
-thenAccept()	消费结果（无返回值）
+## 基本概念
 
-thenRun()	执行操作（忽略结果）
+`CompletableFuture` 是 Java 8 引入的异步编程工具，用于处理非阻塞式异步任务，可以优雅地组合多个异步操作。
 
-thenCompose()	组合多个 CompletableFuture
+## 核心用法
 
-thenCombine()	合并两个 Future 的结果
+### 1. **创建 CompletableFuture**
 
-exceptionally() 	异常处理
+```java
+// 方式一：直接创建
+CompletableFuture<String> future = new CompletableFuture<>();
+future.complete("结果");
 
-handle()	处理结果或异常
+// 方式二：使用静态方法
+CompletableFuture<String> future2 = CompletableFuture.completedFuture("结果");
+
+// 方式三：异步执行任务
+CompletableFuture<String> future3 = CompletableFuture.supplyAsync(() -> {
+    return "异步计算结果";
+});
+```
+
+### 2. **处理结果 - 链式操作**
+
+```java
+CompletableFuture.supplyAsync(() -> 10)
+    .thenApply(x -> x * 2)        // 转换结果
+    .thenAccept(x -> System.out.println(x))  // 消费结果
+    .thenRun(() -> System.out.println("完成")); // 执行操作
+```
+
+### 3. **常用方法**
+
+
+| 方法              | 说明                       |
+| ----------------- | -------------------------- |
+| `thenApply()`     | 转换结果（返回新值）       |
+| `thenAccept()`    | 消费结果（无返回值）       |
+| `thenRun()`       | 执行操作（忽略结果）       |
+| `thenCompose()`   | 组合多个 CompletableFuture |
+| `thenCombine()`   | 合并两个 Future 的结果     |
+| `exceptionally()` | 异常处理                   |
+| `handle()`        | 处理结果或异常             |
+
+### 4. **异常处理**
+
+```java
+CompletableFuture.supplyAsync(() -> {
+    throw new RuntimeException("错误");
+})
+.exceptionally(ex -> {
+    System.out.println("捕获异常: " + ex.getMessage());
+    return "默认值";
+})
+.thenAccept(System.out::println);
+```
+
+### 5. **并发组合**
+
+```java
+// 等待所有任务完成
+CompletableFuture.allOf(future1, future2, future3).join();
+
+// 等待任一任务完成
+CompletableFuture.anyOf(future1, future2, future3).join();
+```
+
+### 6. **实际例子**
+
+```java
+// 模拟多个远程调用
+CompletableFuture<String> user = CompletableFuture.supplyAsync(() -> 
+    queryUserFromDB("userId"));
+CompletableFuture<String> orders = CompletableFuture.supplyAsync(() -> 
+    queryOrdersFromDB("userId"));
+
+// 组合结果
+user.thenCombine(orders, (u, o) -> u + " 拥有订单: " + o)
+    .thenAccept(System.out::println)
+    .join();  // 阻塞等待完成
+```
+
+## 关键点
+
+- **异步非阻塞**：不需要等待，继续执行后续代码
+- **链式调用**：易读易维护
+- **灵活组合**：支持多个 Future 的组合
+- **线程池**：默认使用 `ForkJoinPool.commonPool()`，可自定义
+
+这样就能优雅地处理异步任务了！
+
+
+User: 你能举个具体场景的使用CompletableFuture例子吗？
+
+GitHub Copilot: # 电商订单系统实例
+
+
+这是一个实际的电商场景：获取订单详情需要并发查询用户信息、商品信息和库存。
+
+```java
+// 业务模型
+class User {
+    String id;
+    String name;
+    String email;
+}
+
+class Product {
+    String id;
+    String name;
+    double price;
+}
+
+class Inventory {
+    String productId;
+    int quantity;
+}
+
+class OrderDetail {
+    User user;
+    Product product;
+    Inventory inventory;
+}
+
+// 模拟的数据查询服务
+class OrderService {
+  
+    // 模拟数据库查询（实际应为DB操作）
+    private CompletableFuture<User> fetchUser(String userId) {
+        return CompletableFuture.supplyAsync(() -> {
+            try { Thread.sleep(1000); } catch (InterruptedException e) {}
+            return new User(userId, "张三", "zhangsan@example.com");
+        });
+    }
+  
+    private CompletableFuture<Product> fetchProduct(String productId) {
+        return CompletableFuture.supplyAsync(() -> {
+            try { Thread.sleep(800); } catch (InterruptedException e) {}
+            return new Product(productId, "iPhone 15", 5999.0);
+        });
+    }
+  
+    private CompletableFuture<Inventory> fetchInventory(String productId) {
+        return CompletableFuture.supplyAsync(() -> {
+            try { Thread.sleep(600); } catch (InterruptedException e) {}
+            return new Inventory(productId, 100);
+        });
+    }
+  
+    // 核心方法：并发获取订单详情
+    public CompletableFuture<OrderDetail> getOrderDetail(String userId, String productId) {
+        long startTime = System.currentTimeMillis();
+      
+        // 1. 并发执行三个查询
+        CompletableFuture<User> userFuture = fetchUser(userId);
+        CompletableFuture<Product> productFuture = fetchProduct(productId);
+        CompletableFuture<Inventory> inventoryFuture = fetchInventory(productId);
+      
+        // 2. 等待所有查询完成，组合结果
+        return userFuture
+            .thenCombine(productFuture, (user, product) -> {
+                System.out.println("获取用户和产品完成");
+                return new Pair<>(user, product);
+            })
+            .thenCombine(inventoryFuture, (pair, inventory) -> {
+                OrderDetail detail = new OrderDetail();
+                detail.user = pair.first;
+                detail.product = pair.second;
+                detail.inventory = inventory;
+                return detail;
+            })
+            .exceptionally(ex -> {
+                System.err.println("查询失败: " + ex.getMessage());
+                return null;
+            })
+            .thenApply(detail -> {
+                long endTime = System.currentTimeMillis();
+                System.out.println("总耗时: " + (endTime - startTime) + "ms");
+                return detail;
+            });
+    }
+}
+
+// 使用示例
+public class Main {
+    public static void main(String[] args) {
+        OrderService service = new OrderService();
+      
+        // 获取订单详情（异步执行）
+        service.getOrderDetail("user001", "product123")
+            .thenAccept(order -> {
+                if (order != null) {
+                    System.out.println("=== 订单详情 ===");
+                    System.out.println("用户: " + order.user.name);
+                    System.out.println("邮箱: " + order.user.email);
+                    System.out.println("商品: " + order.product.name);
+                    System.out.println("价格: ¥" + order.product.price);
+                    System.out.println("库存: " + order.inventory.quantity);
+                }
+            })
+            .join();  // 等待异步任务完成
+    }
+}
+```
+
+## 核心优势
+
+
+| 优势         | 说明                                                                |
+| ------------ | ------------------------------------------------------------------- |
+| **并发执行** | 三个查询同时进行，总耗时 ~1000ms（最长的那个），而非 2400ms（串行） |
+| **优雅组合** | 用`thenCombine()` 逐步组合结果，代码清晰                            |
+| **异常处理** | 用`exceptionally()` 统一捕获异常                                    |
+| **非阻塞**   | 主线程不被阻塞，可处理其他任务                                      |
+
+## 性能对比
+
+```
+串行执行:  查询用户(1s) → 查询商品(0.8s) → 查询库存(0.6s) = 2.4秒
+并行执行:  所有查询同时进行，最长为1s = 1秒
+效率提升: 58%
+```
+
+这就是 `CompletableFuture` 在实际项目中的威力！
