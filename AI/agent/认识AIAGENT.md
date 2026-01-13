@@ -89,17 +89,17 @@ LangGraph 用图的结构 管理 工作流 ，如负责人管理其他智能体
 
 RAG 多模态 MCP ReAct
 
-![1768005817782](images/认识AIAGENT/1768005817782.png)
+![1768005817782](../images/认识AIAGENT/1768005817782.png)
 
-![1768005912450](images/认识AIAGENT/1768005912450.png)
+![1768005912450](../images/认识AIAGENT/1768005912450.png)
 
 ReAct：拆解为下面图步骤：
 
 任务规划,工具调用,交互io,异常处理
 
-![1768005999633](images/认识AIAGENT/1768005999633.png)
+![1768005999633](../images/认识AIAGENT/1768005999633.png)
 
-![1768006063507](images/认识AIAGENT/1768006063507.png)
+![1768006063507](../images/认识AIAGENT/1768006063507.png)
 
 # 人工智能
 
@@ -112,29 +112,33 @@ ReAct：拆解为下面图步骤：
 预习训练 sft（简单微调） rlhf（反馈的强化学习）
 
 ### 大模型的特点
-![大模型特点](images/image.png)
+![大模型特点](../images/image.png)
 
 ### 大模型的分类
 大语言模型 多模态模型
-![大模型分类](images/image-1.png)
+![大模型分类](../images/image-1.png)
 
 ### 大模型的工作流程
 分词 概率链接下个词 
 
 # agent
 
-![agent](images/image-2.png)
+![agent](../images/image-2.png)
 
-![agent处理流程](images/image-3.png)
+![agent处理流程](../images/image-3.png)
 
-![agent决策流程](images/image-4.png)
+![agent决策流程](../images/image-4.png)
 
-![agent组件](images/image-5.png)
+![agent组件](../images/image-5.png)
 
-![规划](images/image-6.png)
+![规划](../images/image-6.png)
 
-![子任务拆解](images/image-7.png)
+![子任务拆解](../images/image-7.png)
 
 自洽陷阱 - 》 从众
 
-![思维推导](images/image-8.png)
+![思维推导](../images/image-8.png)
+     
+![记忆](../images/image-9.png)
+
+![工具](../images/image-10.png)
