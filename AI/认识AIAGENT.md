@@ -110,3 +110,31 @@ ReAct：拆解为下面图步骤：
 ## 大模型
 
 预习训练 sft（简单微调） rlhf（反馈的强化学习）
+
+### 大模型的特点
+![大模型特点](image.png)
+
+### 大模型的分类
+大语言模型 多模态模型
+![大模型分类](image-1.png)
+
+### 大模型的工作流程
+分词 概率链接下个词 
+
+# agent
+
+![agent](image-2.png)
+
+![agent处理流程](image-3.png)
+
+![agent决策流程](image-4.png)
+
+![agent组件](image-5.png)
+
+![规划](image-6.png)
+
+![子任务拆解](image-7.png)
+
+自洽陷阱 - 》 从众
+
+![思维推导](image-8.png)
